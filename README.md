@@ -1,4 +1,5 @@
 # Berkshelf::APIClient
+[![Build Status](https://travis-ci.org/berkshelf/berkshelf-api-client.png?branch=master)](https://travis-ci.org/berkshelf/berkshelf-api-client)
 
 A Ruby library for communicating with the [Berkshelf API server](https://github.com/berkshelf/berkshelf-api)
 
