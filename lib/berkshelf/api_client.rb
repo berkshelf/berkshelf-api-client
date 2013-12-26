@@ -7,7 +7,7 @@ module Berkshelf
   #   client = Berkshelf::APIClient.new("https://api.berkshelf.com")
   #   client.universe #=> [...]
   class APIClient < Faraday::Connection
-    VERSION = "1.0.0.dev"
+    VERSION = "1.0.0"
 
     require_relative 'api_client/errors'
     require_relative 'api_client/remote_cookbook'
