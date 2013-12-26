@@ -1,6 +1,6 @@
 # Berkshelf::APIClient
 
-TODO: Write a gem description
+A Ruby library for communicating with the [Berkshelf API server](https://github.com/berkshelf/berkshelf-api)
 
 ## Installation
 
@@ -18,7 +18,7 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+    require 'berkshelf/api-client'
 
 ## Contributing
 
