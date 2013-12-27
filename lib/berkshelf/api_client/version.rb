@@ -1,5 +1,5 @@
 module Berkshelf
-  class APIClient
-    VERSION = "1.0.0.dev"
+  module APIClient
+    VERSION = "1.0.0"
   end
 end

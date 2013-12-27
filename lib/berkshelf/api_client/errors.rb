@@ -1,7 +1,7 @@
 module Berkshelf
   class APIClientError < StandardError; end
 
-  class APIClient
+  module APIClient
     class TimeoutError < APIClientError; end
     class BadResponse < APIClientError; end
     class ServiceUnavaiable < APIClientError; end
