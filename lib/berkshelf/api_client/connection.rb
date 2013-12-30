@@ -1,6 +1,8 @@
 require 'faraday'
 
 module Berkshelf::APIClient
+  require_relative 'errors'
+
   class Connection < Faraday::Connection
     # @return [String]
     attr_reader :url
@@ -36,7 +38,10 @@ module Berkshelf::APIClient
         b.request :retry,
           max: self.retries,
           interval: self.retry_interval,
-          exceptions: [ Faraday::Error::TimeoutError, Errno::ETIMEDOUT ]
+          exceptions: [
+            Faraday::Error::TimeoutError,
+            Errno::ETIMEDOUT
+          ]
 
         b.adapter :net_http
       end
@@ -62,14 +67,16 @@ module Berkshelf::APIClient
           end
         end
       when 404
-        raise APIClient::ServiceNotFound, "service not found at: #{url}"
+        raise ServiceNotFound, "service not found at: #{url}"
       when 500..504
-        raise APIClient::ServiceUnavaiable, "service unavailable at: #{url}"
+        raise ServiceUnavaiable, "service unavailable at: #{url}"
       else
-        raise APIClient::BadResponse, "bad response #{response.inspect}"
+        raise BadResponse, "bad response #{response.inspect}"
       end
     rescue Faraday::Error::TimeoutError, Errno::ETIMEDOUT
-      raise APIClient::TimeoutError, "Unable to connect to: #{url}"
+      raise TimeoutError, "Unable to connect to: #{url}"
+    rescue Faraday::Error::ConnectionFailed => ex
+      raise ServiceUnavaiable, ex
     end
   end
 end

@@ -53,5 +53,15 @@ describe Berkshelf::APIClient::Connection do
         expect(remote.location_type).to_not be_nil
       end
     end
+
+    context "when the connection to the service fails" do
+      before do
+        instance.should_receive(:get).and_raise(Faraday::Error::ConnectionFailed.new(StandardError))
+      end
+
+      it "raises a Berkshelf::APIClient::ServiceUnavaiable" do
+        expect { subject }.to raise_error(Berkshelf::APIClient::ServiceUnavaiable)
+      end
+    end
   end
 end
