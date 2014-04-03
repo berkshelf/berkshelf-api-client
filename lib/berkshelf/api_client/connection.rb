@@ -29,8 +29,8 @@ module Berkshelf::APIClient
       options         = options.reverse_merge(retries: 3, retry_interval: 0.5,
         open_timeout: 3, timeout: 30)
       @url            = url
-      @retries        = options[:retries]
-      @retry_interval = options[:retry_interval]
+      @retries        = options.delete(:retries)
+      @retry_interval = options.delete(:retry_interval)
 
       options[:builder] ||= Faraday::Builder.new do |b|
         b.response :parse_json
@@ -46,9 +46,11 @@ module Berkshelf::APIClient
         b.adapter :net_http
       end
 
+      open_timeout = options.delete(:open_timeout)
+      timeout      = options.delete(:timeout)
       super(self.url, options)
-      @options[:open_timeout] = options[:open_timeout]
-      @options[:timeout]      = options[:timeout]
+      @options[:open_timeout] = open_timeout
+      @options[:timeout]      = timeout
     end
 
     # Retrieves the entire universe of known cookbooks from the API source
