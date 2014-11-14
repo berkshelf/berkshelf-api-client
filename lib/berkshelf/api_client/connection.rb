@@ -43,7 +43,7 @@ module Berkshelf::APIClient
             Errno::ETIMEDOUT
           ]
 
-        b.adapter :net_http
+        b.adapter :httpclient
       end
 
       open_timeout = options.delete(:open_timeout)
