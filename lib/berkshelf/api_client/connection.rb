@@ -27,7 +27,7 @@ module Berkshelf::APIClient
     #   how long to wait (in seconds) between each retry
     def initialize(url, options = {})
       options         = options.reverse_merge(retries: 3, retry_interval: 0.5,
-        open_timeout: 3, timeout: 30)
+        open_timeout: 30, timeout: 30)
       @url            = url
       @retries        = options.delete(:retries)
       @retry_interval = options.delete(:retry_interval)
