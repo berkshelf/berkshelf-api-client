@@ -59,7 +59,11 @@ module Berkshelf::APIClient
     #
     # @return [Array<APIClient::RemoteCookbook>]
     def universe
-      response = get("universe")
+      if Berkshelf::Config.instance.ssl.verify.nil?
+        response = get("universe", :ssl => {:verify => false})
+      else
+        response = get("universe")
+      end
 
       case response.status
       when 200
