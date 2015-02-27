@@ -28,7 +28,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "faraday", "~> 0.9.0"
-  spec.add_dependency "httpclient", "~> 2.5.3"
+  spec.add_dependency "httpclient", "~> 2.6.0"
 
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake"
