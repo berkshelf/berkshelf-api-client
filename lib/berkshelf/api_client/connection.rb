@@ -34,7 +34,6 @@ module Berkshelf::APIClient
 
       options[:builder] ||= Faraday::RackBuilder.new do |b|
         b.response :parse_json
-        b.response :gzip
         b.request :retry,
           max: self.retries,
           interval: self.retry_interval,
