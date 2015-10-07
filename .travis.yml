@@ -3,12 +3,6 @@ rvm:
   - 2.0.0
   - 2.1
   - 2.2
-notifications:
-  irc:
-    channels:
-      - "irc.freenode.org#berkshelf"
-    skip_join: true
-    use_notice: true
 before_install:
   - sudo apt-get install -qq libarchive12 libarchive-dev
 script: bundle exec rake spec
