@@ -32,4 +32,5 @@ end
 
 group :test do
   gem "berkshelf-api", "~> 2.1"
+  gem "reel", "~> 0.6.0"
 end

@@ -1,8 +1,13 @@
+sudo: false
 language: ruby
 rvm:
   - 2.0.0
   - 2.1
   - 2.2
-before_install:
-  - sudo apt-get install -qq libarchive12 libarchive-dev
+cache: bundler
+addons:
+  apt:
+    packages:
+    - libarchive12
+    - libarchive-dev
 script: bundle exec rake spec
