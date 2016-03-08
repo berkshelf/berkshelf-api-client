@@ -9,10 +9,15 @@ module Berkshelf
     require_relative 'api_client/errors'
     require_relative 'api_client/remote_cookbook'
     require_relative 'api_client/connection'
+    require_relative 'api_client/chef_server_connection'
 
     class << self
       def new(*args)
         Connection.new(*args)
+      end
+
+      def chef_server(*args)
+        ChefServerConnection.new(*args)
       end
     end
   end
