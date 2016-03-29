@@ -21,7 +21,7 @@ module Berkshelf::APIClient
         end
       end
     rescue Ridley::Errors::HTTPNotFound
-      raise ServiceNotFound, "service not found at: #{url}"
+      raise ServiceNotFound, "service not found at: #{@url}"
     end
   end
 end
