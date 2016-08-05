@@ -1,13 +1,19 @@
 sudo: false
 language: ruby
-rvm:
-  - 2.0.0
-  - 2.1
-  - 2.2
 cache: bundler
+dist: precise
+branches:
+  only:
+    - master
 addons:
   apt:
     packages:
     - libarchive12
     - libarchive-dev
+matrix:
+  include:
+    - rvm: 2.1.9
+    - rvm: 2.2.5
+    - rvm: 2.3.1
+    - rvm: ruby-head
 script: bundle exec rake spec
