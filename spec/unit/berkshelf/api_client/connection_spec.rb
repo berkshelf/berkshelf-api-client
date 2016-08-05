@@ -21,7 +21,7 @@ describe Berkshelf::APIClient::Connection do
     end
 
     it "contains a item for each dependency" do
-      expect(subject).to have(3).items
+      expect(subject.size).to eq(3)
       expect(subject[0].name).to eql("ruby")
       expect(subject[0].version).to eql("1.2.3")
       expect(subject[1].name).to eql("ruby")
@@ -56,7 +56,7 @@ describe Berkshelf::APIClient::Connection do
 
     context "when the connection to the service fails" do
       before do
-        instance.should_receive(:get).and_raise(Faraday::Error::ConnectionFailed.new(StandardError))
+        expect(instance).to receive(:get).and_raise(Faraday::Error::ConnectionFailed.new(StandardError))
       end
 
       it "raises a Berkshelf::APIClient::ServiceUnavaiable" do

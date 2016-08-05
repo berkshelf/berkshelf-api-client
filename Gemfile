@@ -3,8 +3,8 @@ source 'https://rubygems.org'
 gemspec
 
 group :guard do
-  gem 'coolline',      '~> 0.4.2'
-  gem 'guard',         '~> 1.8'
+  gem 'coolline'
+  gem 'guard'
   gem 'guard-cucumber'
   gem 'guard-rspec'
   gem 'guard-spork'
@@ -31,6 +31,6 @@ group :guard do
 end
 
 group :test do
-  gem "berkshelf-api", "~> 2.1"
-  gem "reel", "~> 0.6.0"
+  gem "berkshelf-api"
+  gem "reel"
 end
