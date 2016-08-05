@@ -35,6 +35,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake"
   spec.add_development_dependency "fuubar"
   spec.add_development_dependency "rspec"
+  spec.add_development_dependency "rspec-its"
   spec.add_development_dependency "spork"
   spec.add_development_dependency "yard"
 end
