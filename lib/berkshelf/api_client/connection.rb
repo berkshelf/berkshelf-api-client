@@ -69,14 +69,14 @@ module Berkshelf::APIClient
       when 404
         raise ServiceNotFound, "service not found at: #{url}"
       when 500..504
-        raise ServiceUnavaiable, "service unavailable at: #{url}"
+        raise ServiceUnavailable, "service unavailable at: #{url}"
       else
         raise BadResponse, "bad response #{response.inspect}"
       end
     rescue Faraday::Error::TimeoutError, Errno::ETIMEDOUT
       raise TimeoutError, "Unable to connect to: #{url}"
     rescue Faraday::Error::ConnectionFailed => ex
-      raise ServiceUnavaiable, ex
+      raise ServiceUnavailable, ex
     end
   end
 end
