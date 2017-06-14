@@ -1,3 +1,4 @@
+require 'berkshelf/ridley_compat'
 
 module Berkshelf::APIClient
   require_relative 'errors'
@@ -6,12 +7,12 @@ module Berkshelf::APIClient
     attr_reader :client
 
     def initialize(*args)
-      @client = Ridley.new(*args)
+      @client = Berkshelf::RidleyCompat.new(*args)
       @url = args[0][:server_url]
     end
 
     def universe
-      response = client.universe
+      response = client.get("universe")
 
       [].tap do |cookbooks|
         response.each do |name, versions|
