@@ -17,7 +17,7 @@ module Berkshelf
         ssl_client_cert: opts[:ssl][:client_cert],
         ssl_client_key: opts[:ssl][:client_key],
       }
-      super(opts[:server_url], **chef_opts)
+      super(opts[:server_url].to_s, **chef_opts)
     end
 
     def get(url)

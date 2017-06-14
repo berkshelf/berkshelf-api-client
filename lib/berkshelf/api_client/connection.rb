@@ -26,9 +26,10 @@ module Berkshelf::APIClient
     # @option options [Float] :retry_interval (0.5)
     #   how long to wait (in seconds) between each retry
     def initialize(url, options = {})
+      @url = url
       options         = {retries: 3, retry_interval: 0.5, open_timeout: 30, timeout: 30}.merge(options)
       options[:server_url] = url
-      @url = url
+      # FIXME: translate from ApiClient->Ridley->Chef::HTTP
       #@retries        = options.delete(:retries)
       #@retry_interval = options.delete(:retry_interval)
 
@@ -45,11 +46,10 @@ module Berkshelf::APIClient
 
       [].tap do |cookbooks|
         response.each do |name, versions|
-          versions.each { |version, attributes|
-            attributes[:location_path] = @url
-            cookbooks << RemoteCookbook.new(name, version, attributes) }
+          versions.each { |version, attributes| cookbooks << RemoteCookbook.new(name, version, attributes) }
         end
       end
+      # FIXME: handle Exceptions in the translation classes
       #  when 404
       #    raise ServiceNotFound, "service not found at: #{url}"
       #  when 500..504
