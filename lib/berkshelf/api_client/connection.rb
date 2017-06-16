@@ -53,18 +53,6 @@ module Berkshelf::APIClient
           versions.each { |version, attributes| cookbooks << RemoteCookbook.new(name, version, attributes) }
         end
       end
-      # FIXME: handle Exceptions in the translation classes
-      #  when 404
-      #    raise ServiceNotFound, "service not found at: #{url}"
-      #  when 500..504
-      #    raise ServiceUnavailable, "service unavailable at: #{url}"
-      #  else
-      #    raise BadResponse, "bad response #{response.inspect}"
-      #  end
-      #rescue Faraday::Error::TimeoutError, Errno::ETIMEDOUT
-      #  raise TimeoutError, "Unable to connect to: #{url}"
-      #rescue Faraday::Error::ConnectionFailed => ex
-      #  raise ServiceUnavailable, ex
     end
   end
 end

@@ -1,6 +1,7 @@
 require 'chef/server_api'
 require 'chef/http/simple_json'
 require 'chef/http/simple'
+require 'berkshelf/api_client/errors'
 
 module Berkshelf
   module RidleyCompatAPI
@@ -22,6 +23,19 @@ module Berkshelf
 
     def get(url)
       super(url)
+    rescue Net::HTTPExceptions => e
+      case e.response.code
+      when "404"
+        raise Berkshelf::APIClient::ServiceNotFound, "service not found at: #{url}"
+      when /^5/
+        raise Berkshelf::APIClient::ServiceUnavailable, "service unavailable at: #{url}"
+      else
+        raise Berkshelf::APIClient::BadResponse, "bad response #{e.response}"
+      end
+    rescue Errno::ETIMEDOUT, Timeout::Error
+      raise Berkshelf::APIClient::TimeoutError, "Unable to connect to: #{url}"
+    rescue Errno::EHOSTUNREACH, Errno::ECONNREFUSED => e
+      raise Berkshelf::APIClient::ServiceUnavailable, e
     end
   end
 
