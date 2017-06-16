@@ -33,9 +33,6 @@ module Berkshelf::APIClient
       #@url = url.normalize! if url.is_a?(Addressable::URI)
       options         = {retries: 3, retry_interval: 0.5, open_timeout: 30, timeout: 30}.merge(options)
       options[:server_url] = url
-      # FIXME: translate from ApiClient->Ridley->Chef::HTTP
-      #@retries        = options.delete(:retries)
-      #@retry_interval = options.delete(:retry_interval)
 
       @client = Berkshelf::RidleyCompatJSON.new(**options)
     end

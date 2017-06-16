@@ -57,6 +57,11 @@ describe Berkshelf::APIClient::Connection do
   end
 
   describe "non-200s" do
+    before do
+      Chef::Config[:http_retry_delay] = 0.001
+      Chef::Config[:http_retry_count] = 0
+    end
+
     subject { instance.universe }
 
     it "follows 301 redirects correctly" do
