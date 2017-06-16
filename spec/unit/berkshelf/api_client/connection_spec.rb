@@ -73,7 +73,6 @@ describe Berkshelf::APIClient::Connection do
     end
 
     it "raises Berkshelf::APIClient::ServiceUnavailable for 500s" do
-      # FIXME: suppress/test retries
       stub_request(:get, "http://supermarket.getchef.com/universe").to_return(:status => [500, "Internal Server Error"])
       expect { subject }.to raise_error(Berkshelf::APIClient::ServiceUnavailable)
     end
@@ -89,13 +88,11 @@ describe Berkshelf::APIClient::Connection do
     end
 
     it "raises Berkshelf::APIClient::TimeoutError for timeouts" do
-      # FIXME: suppress/test retries
       stub_request(:get, "http://supermarket.getchef.com/universe").to_timeout
       expect { subject }.to raise_error(Berkshelf::APIClient::TimeoutError)
     end
 
     it "raises Berkshelf::APIClient::TimeoutError for timeouts" do
-      # FIXME: suppress/test retries
       stub_request(:get, "http://supermarket.getchef.com/universe").to_raise(Errno::ECONNREFUSED)
       expect { subject }.to raise_error(Berkshelf::APIClient::ServiceUnavailable)
     end
