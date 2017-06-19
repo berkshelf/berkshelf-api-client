@@ -1,28 +1,16 @@
-require 'bundler'
 require 'rspec'
 require 'rspec/its'
-require 'spork'
-require 'berkshelf/api/rspec'
+require 'webmock/rspec'
+require 'berkshelf/api-client'
 
-Spork.prefork do
-  Dir[File.join(File.expand_path("../../spec/support/**/*.rb", __FILE__))].each { |f| require f }
+WebMock.disable_net_connect!(allow_localhost: false)
 
-  RSpec.configure do |config|
-    config.include Berkshelf::API::RSpec
-
-    config.expect_with :rspec do |c|
-      c.syntax = :expect
-    end
-
-    config.mock_with :rspec
-    config.filter_run focus: true
-    config.run_all_when_everything_filtered = true
-
-    config.before(:suite) { Berkshelf::API::RSpec::Server.start }
-    config.before(:all) { Berkshelf::API::Logging.init(location: '/dev/null') }
+RSpec.configure do |config|
+  config.expect_with :rspec do |c|
+    c.syntax = :expect
   end
-end
 
-Spork.each_run do
-  require 'berkshelf/api-client'
+  config.mock_with :rspec
+  config.filter_run focus: true
+  config.run_all_when_everything_filtered = true
 end

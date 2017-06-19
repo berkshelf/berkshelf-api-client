@@ -20,22 +20,12 @@ Gem::Specification.new do |spec|
   spec.summary                   = spec.description
   spec.homepage                  = "http://berkshelf.com"
   spec.license                   = "Apache 2.0"
-  spec.required_ruby_version     = ">= 2.2"
+  spec.required_ruby_version     = ">= 2.3"
 
   spec.files         = `git ls-files`.split($/)
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "faraday", "~> 0.9"
-  spec.add_dependency "httpclient", "~> 2.7"
-  spec.add_dependency "ridley", ">= 4.5", "< 6.0"
-
-  spec.add_development_dependency "bundler"
-  spec.add_development_dependency "rake"
-  spec.add_development_dependency "fuubar"
-  spec.add_development_dependency "rspec"
-  spec.add_development_dependency "rspec-its"
-  spec.add_development_dependency "spork"
-  spec.add_development_dependency "yard"
+  spec.add_dependency "chef", ">= 12.0"
 end

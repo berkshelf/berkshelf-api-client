@@ -1,13 +1,14 @@
 require 'spec_helper'
 
 describe Berkshelf::APIClient::Connection do
-  let(:instance) { described_class.new("http://localhost:26210") }
+  let(:instance) { described_class.new("http://supermarket.getchef.com") }
 
   describe "#universe" do
     before do
-      berks_dependency("ruby", "1.2.3", dependencies: { "build-essential" => ">= 1.2.2" })
-      berks_dependency("ruby", "2.0.0", dependencies: { "build-essential" => ">= 1.2.2" })
-      berks_dependency("elixir", "1.0.0", platforms: { "CentOS" => "6.0" })
+      body_response = %Q{{"ruby":{"1.2.3":{"endpoint_priority":0,"platforms":{},"dependencies":{"build-essential":">= 1.2.2"},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"},"2.0.0":{"endpoint_priority":0,"platforms":{},"dependencies":{"build-essential":">= 1.2.2"},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"}},"elixir":{"1.0.0":{"endpoint_priority":0,"platforms":{"CentOS":"= 6.0.0"},"dependencies":{},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"}}}}
+
+       stub_request(:get, "http://supermarket.getchef.com/universe")
+         .to_return(status: 200, body: body_response, headers: { "Content-Type" => "application/json; charset=utf-8" })
     end
 
     subject { instance.universe }
@@ -53,15 +54,47 @@ describe Berkshelf::APIClient::Connection do
         expect(remote.location_type).to_not be_nil
       end
     end
+  end
 
-    context "when the connection to the service fails" do
-      before do
-        expect(instance).to receive(:get).and_raise(Faraday::Error::ConnectionFailed.new(StandardError))
-      end
+  describe "non-200s" do
+    before do
+      Chef::Config[:http_retry_delay] = 0.001
+      Chef::Config[:http_retry_count] = 0
+    end
 
-      it "raises a Berkshelf::APIClient::ServiceUnavailable" do
-        expect { subject }.to raise_error(Berkshelf::APIClient::ServiceUnavailable)
-      end
+    subject { instance.universe }
+
+    it "follows 301 redirects correctly" do
+      stub_request(:get, "http://supermarket.getchef.com/universe").to_return(:status => 301, :headers => { 'Location' => "http://arglebargle.com/universe" })
+      body_response = %Q{{"ruby":{"1.2.3":{"endpoint_priority":0,"platforms":{},"dependencies":{"build-essential":">= 1.2.2"},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"},"2.0.0":{"endpoint_priority":0,"platforms":{},"dependencies":{"build-essential":">= 1.2.2"},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"}},"elixir":{"1.0.0":{"endpoint_priority":0,"platforms":{"CentOS":"= 6.0.0"},"dependencies":{},"location_type":"supermarket","location_path":"https://supermarket.getchef.com/"}}}}
+      stub_request(:get, "http://arglebargle.com/universe")
+        .to_return(status: 200, body: body_response, headers: { "Content-Type" => "application/json; charset=utf-8" })
+      expect(subject.size).to eq(3)
+    end
+
+    it "raises Berkshelf::APIClient::ServiceUnavailable for 500s" do
+      stub_request(:get, "http://supermarket.getchef.com/universe").to_return(:status => [500, "Internal Server Error"])
+      expect { subject }.to raise_error(Berkshelf::APIClient::ServiceUnavailable)
+    end
+
+    it "raises Berkshelf::APIClient::ServiceNotFound for 404s" do
+      stub_request(:get, "http://supermarket.getchef.com/universe").to_return(:status => [404, "Not Found"])
+      expect { subject }.to raise_error(Berkshelf::APIClient::ServiceNotFound)
+    end
+
+    it "raises Net::HTTPBadRequest for 400s" do
+      stub_request(:get, "http://supermarket.getchef.com/universe").to_return(:status => [400, "Bad Request"])
+      expect { subject }.to raise_error(Berkshelf::APIClient::BadResponse)
+    end
+
+    it "raises Berkshelf::APIClient::TimeoutError for timeouts" do
+      stub_request(:get, "http://supermarket.getchef.com/universe").to_timeout
+      expect { subject }.to raise_error(Berkshelf::APIClient::TimeoutError)
+    end
+
+    it "raises Berkshelf::APIClient::TimeoutError for timeouts" do
+      stub_request(:get, "http://supermarket.getchef.com/universe").to_raise(Errno::ECONNREFUSED)
+      expect { subject }.to raise_error(Berkshelf::APIClient::ServiceUnavailable)
     end
   end
 end

@@ -1,4 +1,5 @@
 require 'json'
+require 'chef/mash'
 
 module Berkshelf::APIClient
   # A representation of cookbook metadata indexed by a Berkshelf API Server. Returned
@@ -16,7 +17,7 @@ module Berkshelf::APIClient
     def initialize(name, version, attributes = {})
       @name       = name
       @version    = version
-      @attributes = attributes
+      @attributes = ::Mash.new(attributes)
     end
 
     # @return [Hash]

@@ -1,9 +1,9 @@
-require 'faraday'
+require 'berkshelf/ridley_compat'
 
 module Berkshelf::APIClient
   require_relative 'errors'
 
-  class Connection < Faraday::Connection
+  class Connection
     # @return [String]
     attr_reader :url
 
@@ -26,29 +26,15 @@ module Berkshelf::APIClient
     # @option options [Float] :retry_interval (0.5)
     #   how long to wait (in seconds) between each retry
     def initialize(url, options = {})
+      # it looks like Faraday mutates the URI argument it is given, when we ripped Faraday out of this
+      # API it stopped doing that.  this may or may not be a breaking change (it broke some fairly
+      # brittle berkshelf tests).  if it causes too much berkshelf chaos we could revert by uncommenting
+      # the next line.  as it is removing this behavior feels more like fixing a bug.
+      #@url = url.normalize! if url.is_a?(Addressable::URI)
       options         = {retries: 3, retry_interval: 0.5, open_timeout: 30, timeout: 30}.merge(options)
-      @url            = url
-      @retries        = options.delete(:retries)
-      @retry_interval = options.delete(:retry_interval)
+      options[:server_url] = url
 
-      options[:builder] ||= Faraday::RackBuilder.new do |b|
-        b.response :parse_json
-        b.request :retry,
-          max: self.retries,
-          interval: self.retry_interval,
-          exceptions: [
-            Faraday::Error::TimeoutError,
-            Errno::ETIMEDOUT
-          ]
-
-        b.adapter :httpclient
-      end
-
-      open_timeout = options.delete(:open_timeout)
-      timeout      = options.delete(:timeout)
-      super(self.url, options)
-      @options[:open_timeout] = open_timeout
-      @options[:timeout]      = timeout
+      @client = Berkshelf::RidleyCompatJSON.new(**options)
     end
 
     # Retrieves the entire universe of known cookbooks from the API source
@@ -57,26 +43,13 @@ module Berkshelf::APIClient
     #
     # @return [Array<APIClient::RemoteCookbook>]
     def universe
-      response = get("universe")
+      response = @client.get("universe")
 
-      case response.status
-      when 200
-        [].tap do |cookbooks|
-          response.body.each do |name, versions|
-            versions.each { |version, attributes| cookbooks << RemoteCookbook.new(name, version, attributes) }
-          end
+      [].tap do |cookbooks|
+        response.each do |name, versions|
+          versions.each { |version, attributes| cookbooks << RemoteCookbook.new(name, version, attributes) }
         end
-      when 404
-        raise ServiceNotFound, "service not found at: #{url}"
-      when 500..504
-        raise ServiceUnavailable, "service unavailable at: #{url}"
-      else
-        raise BadResponse, "bad response #{response.inspect}"
       end
-    rescue Faraday::Error::TimeoutError, Errno::ETIMEDOUT
-      raise TimeoutError, "Unable to connect to: #{url}"
-    rescue Faraday::Error::ConnectionFailed => ex
-      raise ServiceUnavailable, ex
     end
   end
 end
