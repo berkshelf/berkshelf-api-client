@@ -10,6 +10,7 @@ module Berkshelf
       opts[:ssl] ||= {}
       chef_opts = {
         rest_timeout: opts[:timeout], # opts[:open_timeout] is ignored on purpose
+        headers: opts[:headers],
         client_name: opts[:client_name],
         signing_key_filename: opts[:client_key],
         ssl_verify_mode: opts[:verify] ? :verify_none : :verify_peer,
